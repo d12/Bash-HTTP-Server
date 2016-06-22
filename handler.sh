@@ -58,7 +58,7 @@ grab_resource(){
     ((count++))
     if [ $count -eq $len ]; then
       if [ -f $i ]; then
-       file_output=$(<$i)
+        file=$i
       else
         throw_404
       fi
@@ -72,8 +72,12 @@ read -r line || throw_400
 
 parse_URL "$line"
 
-grab_resource $parsed_url
+if [ -z "$parsed_url" ]; then
+  grab_resource "index.html"
+else
+  grab_resource $parsed_url
+fi
 
 print_headers 200
 
-echo $file_output
+cat $file
