@@ -21,17 +21,43 @@ response_code(){
   esac
 }
 
+MIME_header(){
+  case "$file" in
+    *.png)
+      echo "image/png"
+      ;;
+    *.jpg|*.jpeg)
+      echo "image/jpg"
+      ;;
+    *.html)
+      echo "text/html"
+      ;;
+    *.css)
+      echo "text/css"
+      ;;
+    *.js)
+      echo "application/javascript"
+      ;;
+    *.json)
+      echo "application/json"
+      ;;
+    *)
+      echo "text/plain"
+  esac
+}
+
 print_headers(){
   response_code $1
   echo "Date: $(date)"
   echo "Connection: close"
   echo "Server: NatsServer"
-  echo "Accept-Ranges: byes"
+  echo "Accept-Ranges: bytes"
+  echo -n "Content-Type: "
+  MIME_header
   echo ""
 }
 
 parse_URL(){
-  #Extract path from resource line
   split_array=($1)
   parsed_url=${split_array[1]#?}
 }
@@ -64,7 +90,7 @@ grab_resource(){
       fi
     else
       cd $i || throw_404
-    fi
+    fi 
   done
 }
 
