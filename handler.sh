@@ -41,6 +41,9 @@ MIME_header(){
     *.json)
       echo "application/json"
       ;;
+    *.pdf)
+      echo "applicatioon/pdf"
+      ;;
     *)
       echo "text/plain"
   esac
@@ -75,7 +78,7 @@ throw_404(){
 }
 
 grab_resource(){
-  cd ~/server
+  cd ~/server/public_html
   IFS='/' read -ra path_arr <<< "$1"
   IFS=''
   len=${#path_arr[@]}
@@ -96,7 +99,8 @@ grab_resource(){
 
 read -r line || throw_400
 
-parse_URL "$line"
+parsedline="${line%\?*}"
+parse_URL "$parsedline"
 
 if [ -z "$parsed_url" ]; then
   grab_resource "index.html"
