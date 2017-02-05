@@ -42,7 +42,7 @@ MIME_header(){
       echo "application/json"
       ;;
     *.pdf)
-      echo "applicatioon/pdf"
+      echo "application/pdf"
       ;;
     *)
       echo "text/plain"
@@ -86,21 +86,29 @@ grab_resource(){
   for i in "${path_arr[@]}"; do
     ((count++))
     if [ $count -eq $len ]; then
-      if [ -f $i ]; then
+      if [ -f "$i" ]; then
         file=$i
+      elif [ -f "${i}/index.html" ]; then
+        cd $i
+        file="index.html"
       else
         throw_404
       fi
     else
       cd $i || throw_404
-    fi 
+    fi
   done
 }
 
 read -r line || throw_400
 
-parsedline="${line%\?*}"
-parse_URL "$parsedline"
+prep="${line}?"
+url=$(echo $prep | cut -d'?' -f1)
+params=$(echo $prep | cut -d'?' -f2)
+step=$(echo $params | cut -d'=' -f2)
+stopnum=$(echo $step | cut -d' ' -f1)
+
+parse_URL "$url"
 
 if [ -z "$parsed_url" ]; then
   grab_resource "index.html"
@@ -110,4 +118,4 @@ fi
 
 print_headers 200
 
-cat $file
+php -e $file $stopnum
