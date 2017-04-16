@@ -45,7 +45,7 @@ MIME_header(){
       echo "application/pdf"
       ;;
     *)
-      echo "text/plain"
+      echo "text/html"
   esac
 }
 
